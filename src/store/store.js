@@ -2,23 +2,10 @@ import { createStore } from "vuex";
 
 export default createStore({
   state() {
-    return {
-      todos: [],
-    };
+    return {};
   },
-  mutations: {
-    addTodo(state, item) {
-      state.todos.unshift(item);
-    },
-  },
-  getters: {
-    getTodos(state) {
-      return state.todos;
-    },
-    todoCount(state) {
-      return state.todos.length;
-    },
-  },
+  mutations: {},
+  getters: {},
   actions: {},
   modules: {},
 });
