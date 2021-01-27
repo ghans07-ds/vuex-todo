@@ -3,17 +3,17 @@
     <div class="calc-container">
       <div class="result-area">
         <div class="history-result">
-          <p>{{ equation }}</p>
+          <p>{{ mathEquationHistory }}</p>
         </div>
         <div class="current-result">
-          <p>{{ Result }}</p>
+          <p>{{ mathEquation }}</p>
         </div>
       </div>
       <div class="btn-area">
         <table>
           <tbody>
             <tr>
-              <td colspan="3" @click="clearConsole()">CE</td>
+              <td colspan="3" @click="clearResultConsole()">CE</td>
               <td @click="enterNumber('+')">+</td>
             </tr>
             <tr>
@@ -36,7 +36,7 @@
             </tr>
             <tr>
               <td colspan="2" @click="enterNumber('0')">0</td>
-              <td @click="popNumber()"></td>
+              <td @click="removeLastDigit()">b</td>
               <td @click="getAnswer()">=</td>
             </tr>
           </tbody>
@@ -49,10 +49,12 @@
 export default {
   data() {
     return {
-      Result: "0",
+      mathEquation: "0",
+      mathEquationHistory: "0",
       stack: [],
       answer: 0,
-      equation: 0,
+      id: 0,
+      answerHistory: "",
     };
   },
   methods: {
@@ -61,7 +63,7 @@ export default {
       // if stack is empty
       if (stackLength === 0) {
         if (["0", "*", "/", "+", "-", "#"].includes(n)) {
-          this.Result = "0";
+          this.answer = 0;
         } else if (Number.isInteger(Number(n))) {
           this.stack.push(n);
           this.answer = Number(this.stack[0]);
@@ -74,9 +76,6 @@ export default {
           this.answer = Number(this.stack[stackLength - 1]);
         } else if (["*", "/", "+", "-"].includes(n)) {
           this.stack.push(n);
-        } else if (["CE", "#"].includes(n)) {
-          this.stack.pop();
-          this.Result = "0";
         }
         // if stack lenght is 2
       } else if (stackLength === 2) {
@@ -91,7 +90,6 @@ export default {
         }
         // if stack lenght is >2
       } else {
-        console.log(this.answer);
         let tempString = this.stack[stackLength - 1];
         if (Number.isInteger(Number(tempString))) {
           if (Number.isInteger(Number(n))) {
@@ -120,38 +118,42 @@ export default {
         this.answer = this.answer - Number(n);
       }
     },
-    popNumber() {
+    removeLastDigit() {
       this.stack.pop();
     },
-    changeNumber() {
+    updateAnswerConsole() {
       if (this.stack.length === 0) {
-        this.Result = "0";
+        this.mathEquation = "0";
       } else {
         let num;
-        this.Result = "";
+        this.mathEquation = "";
         for (num = 0; num < this.stack.length; num++) {
-          this.Result += String(this.stack[num]);
+          this.mathEquation += String(this.stack[num]);
         }
       }
     },
     getAnswer() {
-      this.equation = this.Result;
-      this.Result = this.answer;
+      this.answerHistory =
+        String(this.mathEquation) + " = " + String(this.answer);
+      const { id, answerHistory } = this;
+      this.$store.commit("addHistory", { id, answerHistory });
+      this.id++;
+      this.mathEquationHistory = this.mathEquation;
+      this.mathEquation = this.answer;
       this.stack = [];
       this.stack.push(this.answer);
     },
-    clearConsole() {
-      this.equation = "0";
-      this.Result = "0";
+    clearResultConsole() {
       this.answer = "0";
       this.stack = [];
     },
   },
   watch: {
+    // update the console result when stack is update
     stack: {
       deep: true,
       handler() {
-        this.changeNumber();
+        this.updateAnswerConsole();
       },
     },
   },

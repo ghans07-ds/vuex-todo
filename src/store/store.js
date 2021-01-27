@@ -2,10 +2,20 @@ import { createStore } from "vuex";
 
 export default createStore({
   state() {
-    return {};
+    return {
+      history: [],
+    };
   },
-  mutations: {},
-  getters: {},
+  mutations: {
+    addHistory(state, item) {
+      state.history.unshift(item);
+    },
+  },
+  getters: {
+    getHistory(state) {
+      return state.history;
+    },
+  },
   actions: {},
   modules: {},
 });
