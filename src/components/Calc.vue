@@ -13,7 +13,7 @@
         <table>
           <tbody>
             <tr>
-              <td colspan="3" @click="enterNumber('CE')">CE</td>
+              <td colspan="3" @click="clearConsole()">CE</td>
               <td @click="enterNumber('+')">+</td>
             </tr>
             <tr>
@@ -35,9 +35,8 @@
               <td @click="enterNumber('/')">/</td>
             </tr>
             <tr>
-              <td @click="enterNumber('.')">.</td>
-              <td @click="enterNumber('0')">0</td>
-              <td @click="popNumber()">#</td>
+              <td colspan="2" @click="enterNumber('0')">0</td>
+              <td @click="popNumber()"></td>
               <td @click="getAnswer()">=</td>
             </tr>
           </tbody>
@@ -59,9 +58,7 @@ export default {
   methods: {
     enterNumber(n) {
       let stackLength = this.stack.length;
-      console.log(this.answer);
-
-      // if array is empty
+      // if stack is empty
       if (stackLength === 0) {
         if (["0", "*", "/", "+", "-", "#"].includes(n)) {
           this.Result = "0";
@@ -69,6 +66,7 @@ export default {
           this.stack.push(n);
           this.answer = Number(this.stack[0]);
         }
+        // if stack lenght is 1
       } else if (stackLength === 1) {
         if (Number.isInteger(Number(n))) {
           let tempString = this.stack.pop();
@@ -80,27 +78,20 @@ export default {
           this.stack.pop();
           this.Result = "0";
         }
+        // if stack lenght is 2
       } else if (stackLength === 2) {
         let tempString = this.stack[stackLength - 1];
-        // console.log(tempString);
         if (
           Number.isInteger(Number(n)) &&
           ["*", "/", "+", "-"].includes(tempString)
         ) {
           this.stack.push(n);
-          if (tempString === "*") {
-            this.answer = this.answer * Number(n);
-          } else if (tempString === "+") {
-            this.answer = this.answer + Number(n);
-          } else if (tempString === "/") {
-            this.answer = this.answer / Number(n);
-          } else if (tempString === "-") {
-            this.answer = this.answer - Number(n);
-          }
-        } else if (n === "CE") {
-          this.Result = "0";
+          // performing mathematical operation
+          this.doCalculation(tempString, n);
         }
+        // if stack lenght is >2
       } else {
+        console.log(this.answer);
         let tempString = this.stack[stackLength - 1];
         if (Number.isInteger(Number(tempString))) {
           if (Number.isInteger(Number(n))) {
@@ -108,24 +99,27 @@ export default {
             this.stack.push(String(String(Str) + n));
           } else {
             this.stack.push(n);
-            if (tempString === "*") {
-              this.answer = this.answer * Number(n);
-            } else if (tempString === "+") {
-              this.answer = this.answer + Number(n);
-            } else if (tempString === "/") {
-              this.answer = this.answer / Number(n);
-            } else if (tempString === "-") {
-              this.answer = this.answer - Number(n);
-            }
           }
         } else {
           if (Number.isInteger(Number(n))) {
             this.stack.push(n);
+            // performing mathematical operation
+            this.doCalculation(tempString, n);
           }
         }
       }
     },
-
+    doCalculation(tempString, n) {
+      if (tempString === "*") {
+        this.answer = this.answer * Number(n);
+      } else if (tempString === "+") {
+        this.answer = this.answer + Number(n);
+      } else if (tempString === "/") {
+        this.answer = this.answer / Number(n);
+      } else if (tempString === "-") {
+        this.answer = this.answer - Number(n);
+      }
+    },
     popNumber() {
       this.stack.pop();
     },
@@ -143,6 +137,14 @@ export default {
     getAnswer() {
       this.equation = this.Result;
       this.Result = this.answer;
+      this.stack = [];
+      this.stack.push(this.answer);
+    },
+    clearConsole() {
+      this.equation = "0";
+      this.Result = "0";
+      this.answer = "0";
+      this.stack = [];
     },
   },
   watch: {
@@ -181,11 +183,11 @@ export default {
       border: 5px solid rgb(216, 32, 42);
       display: flex;
       flex-direction: column;
-
+      color: rgb(41, 19, 19);
       .history-result {
         height: 50%;
         p {
-          font-size: 1.5rem;
+          font-size: 2.5rem;
           text-align: end;
           line-height: 9.2vh;
         }
@@ -193,7 +195,7 @@ export default {
       .current-result {
         height: 50%;
         p {
-          font-size: 2.5rem;
+          font-size: 5rem;
           text-align: end;
           line-height: 9.2vh;
           // border: 1px solid black;
@@ -215,7 +217,7 @@ export default {
             border: 5px solid rgb(216, 32, 42);
             text-align: center;
             padding: auto;
-            font-size: 3rem;
+            font-size: 4rem;
             color: rgb(216, 32, 42);
             font-weight: bolder;
             cursor: pointer;
@@ -237,6 +239,23 @@ export default {
     .calc-container {
       height: 80vh;
       width: 90vw;
+      .result-area {
+        .history-result p {
+          font-size: 1.5rem;
+        }
+        .current-result p {
+          font-size: 3rem;
+        }
+      }
+      .btn-area {
+        table {
+          tr {
+            td {
+              font-size: 3rem;
+            }
+          }
+        }
+      }
     }
   }
 }
