@@ -1,64 +1,159 @@
 <template>
   <div class="container">
     <div class="calc-container">
-      <div class="result-area"></div>
+      <div class="result-area">
+        <div class="history-result">
+          <p>{{ equation }}</p>
+        </div>
+        <div class="current-result">
+          <p>{{ Result }}</p>
+        </div>
+      </div>
       <div class="btn-area">
         <table>
           <tbody>
             <tr>
-              <td colspan="3">CE</td>
-              <td>+</td>
+              <td colspan="3" @click="enterNumber('CE')">CE</td>
+              <td @click="enterNumber('+')">+</td>
             </tr>
             <tr>
-              <td>9</td>
-              <td>8</td>
-              <td>7</td>
-              <td>-</td>
+              <td @click="enterNumber('9')">9</td>
+              <td @click="enterNumber('8')">8</td>
+              <td @click="enterNumber('7')">7</td>
+              <td @click="enterNumber('-')">-</td>
             </tr>
             <tr>
-              <td>6</td>
-              <td>5</td>
-              <td>4</td>
-              <td>*</td>
+              <td @click="enterNumber('6')">6</td>
+              <td @click="enterNumber('5')">5</td>
+              <td @click="enterNumber('4')">4</td>
+              <td @click="enterNumber('*')">*</td>
             </tr>
             <tr>
-              <td>3</td>
-              <td>2</td>
-              <td>1</td>
-              <td>/</td>
+              <td @click="enterNumber('3')">3</td>
+              <td @click="enterNumber('2')">2</td>
+              <td @click="enterNumber('1')">1</td>
+              <td @click="enterNumber('/')">/</td>
             </tr>
             <tr>
-              <td>.</td>
-              <td>0</td>
-              <td>#</td>
-              <td>=</td>
+              <td @click="enterNumber('.')">.</td>
+              <td @click="enterNumber('0')">0</td>
+              <td @click="popNumber()">#</td>
+              <td @click="getAnswer()">=</td>
             </tr>
           </tbody>
         </table>
-        <!-- <div class="clear-btn"></div>
-        <div class="btn-1 btn-field"></div>
-        <div class="btn-2 btn-field"></div>
-        <div class="btn-3 btn-field"></div>
-        <div class="btn-4 btn-field"></div>
-        <div class="btn-5 btn-field"></div>
-        <div class="btn-6 btn-field"></div>
-        <div class="btn-7 btn-field"></div>
-        <div class="btn-8 btn-field"></div>
-        <div class="btn-9 btn-field"></div>
-        <div class="btn-0 btn-field"></div>
-        <div class="btn-add btn-field"></div>
-        <div class="btn-sub btn-field"></div>
-        <div class="btn-div btn-field"></div>
-        <div class="btn-mul btn-field"></div>
-        <div class="btn-equal btn-field"></div>
-        <div class="btn-back btn-field"></div>
-        <div class="btn-dot btn-field"></div> -->
       </div>
     </div>
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      Result: "0",
+      stack: [],
+      answer: 0,
+      equation: 0,
+    };
+  },
+  methods: {
+    enterNumber(n) {
+      let stackLength = this.stack.length;
+      console.log(this.answer);
+
+      // if array is empty
+      if (stackLength === 0) {
+        if (["0", "*", "/", "+", "-", "#"].includes(n)) {
+          this.Result = "0";
+        } else if (Number.isInteger(Number(n))) {
+          this.stack.push(n);
+          this.answer = Number(this.stack[0]);
+        }
+      } else if (stackLength === 1) {
+        if (Number.isInteger(Number(n))) {
+          let tempString = this.stack.pop();
+          this.stack.push(String(String(tempString) + n));
+          this.answer = Number(this.stack[stackLength - 1]);
+        } else if (["*", "/", "+", "-"].includes(n)) {
+          this.stack.push(n);
+        } else if (["CE", "#"].includes(n)) {
+          this.stack.pop();
+          this.Result = "0";
+        }
+      } else if (stackLength === 2) {
+        let tempString = this.stack[stackLength - 1];
+        // console.log(tempString);
+        if (
+          Number.isInteger(Number(n)) &&
+          ["*", "/", "+", "-"].includes(tempString)
+        ) {
+          this.stack.push(n);
+          if (tempString === "*") {
+            this.answer = this.answer * Number(n);
+          } else if (tempString === "+") {
+            this.answer = this.answer + Number(n);
+          } else if (tempString === "/") {
+            this.answer = this.answer / Number(n);
+          } else if (tempString === "-") {
+            this.answer = this.answer - Number(n);
+          }
+        } else if (n === "CE") {
+          this.Result = "0";
+        }
+      } else {
+        let tempString = this.stack[stackLength - 1];
+        if (Number.isInteger(Number(tempString))) {
+          if (Number.isInteger(Number(n))) {
+            let Str = this.stack.pop();
+            this.stack.push(String(String(Str) + n));
+          } else {
+            this.stack.push(n);
+            if (tempString === "*") {
+              this.answer = this.answer * Number(n);
+            } else if (tempString === "+") {
+              this.answer = this.answer + Number(n);
+            } else if (tempString === "/") {
+              this.answer = this.answer / Number(n);
+            } else if (tempString === "-") {
+              this.answer = this.answer - Number(n);
+            }
+          }
+        } else {
+          if (Number.isInteger(Number(n))) {
+            this.stack.push(n);
+          }
+        }
+      }
+    },
+
+    popNumber() {
+      this.stack.pop();
+    },
+    changeNumber() {
+      if (this.stack.length === 0) {
+        this.Result = "0";
+      } else {
+        let num;
+        this.Result = "";
+        for (num = 0; num < this.stack.length; num++) {
+          this.Result += String(this.stack[num]);
+        }
+      }
+    },
+    getAnswer() {
+      this.equation = this.Result;
+      this.Result = this.answer;
+    },
+  },
+  watch: {
+    stack: {
+      deep: true,
+      handler() {
+        this.changeNumber();
+      },
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 .container {
@@ -84,8 +179,27 @@ export default {};
     .result-area {
       grid-area: ra;
       border: 5px solid rgb(216, 32, 42);
-      //   border-radius: 10px;
-      //   margin: 8px;
+      display: flex;
+      flex-direction: column;
+
+      .history-result {
+        height: 50%;
+        p {
+          font-size: 1.5rem;
+          text-align: end;
+          line-height: 9.2vh;
+        }
+      }
+      .current-result {
+        height: 50%;
+        p {
+          font-size: 2.5rem;
+          text-align: end;
+          line-height: 9.2vh;
+          // border: 1px solid black;
+          padding-right: 1vw;
+        }
+      }
     }
     .btn-area {
       grid-area: ba;
@@ -107,50 +221,22 @@ export default {};
             cursor: pointer;
           }
           td:hover {
-            background-color: rgb(216, 32, 42);
+            // background-color: rgb(216, 32, 42);
             color: white;
             // transform: scale(1.2);
             // border-color: white;
           }
         }
       }
-
-      //   .btn-1{
-      //       grid-area: b1;
-      //   }
-      //   .btn-2{
-      //       grid-area: b2;
-      //   }.btn-3{
-      //       grid-area: b3;
-      //   }.btn-4{
-      //       grid-area: b4;
-      //   }.btn-5{
-      //       grid-area: b5;
-      //   }.btn-6{
-      //       grid-area: b6;
-      //   }.btn-7{
-      //       grid-area: b7;
-      //   }.btn-8{
-      //       grid-area: b8;
-      //   }.btn-9{
-      //       grid-area: b9;
-      //   }.btn-0{
-      //       grid-area: b0;
-      //   }.btn-0{
-      //       grid-area: b0;
-      //   }.btn-0{
-      //       grid-area: b0;
-      //   }.btn-0{
-      //       grid-area: b0;
-      //   }.btn-0{
-      //       grid-area: b0;
-      //   }.btn-0{
-      //       grid-area: b0;
-      //   }.btn-0{
-      //       grid-area: b0;
-      //   }.btn-0{
-      //       grid-area: b0;
-      //   }
+    }
+  }
+}
+@media (max-width: 600px) {
+  .container {
+    padding: 10vh 5vw;
+    .calc-container {
+      height: 80vh;
+      width: 90vw;
     }
   }
 }
