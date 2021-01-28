@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="body">
     <CalcuLater></CalcuLater>
     <CalcHistory></CalcHistory>
   </div>
@@ -15,4 +15,5 @@ export default {
   },
 };
 </script>
-<style lang="scss"></style>
+
+</style>

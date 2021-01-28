@@ -1,4 +1,6 @@
 <template>
+  <div class="circle-one"></div>
+  <div class="circle-two"></div>
   <div class="container">
     <div class="calc-container">
       <div class="result-area">
@@ -13,7 +15,7 @@
         <table>
           <tbody>
             <tr>
-              <td colspan="3" @click="clearResultConsole()">CE</td>
+              <td colspan="3" @click="clearResultConsole()">C</td>
               <td @click="enterNumber('+')">+</td>
             </tr>
             <tr>
@@ -36,7 +38,9 @@
             </tr>
             <tr>
               <td colspan="2" @click="enterNumber('0')">0</td>
-              <td @click="removeLastDigit()">b</td>
+              <td @click="removeLastDigit()">
+                <i class="fa fa-angle-left"></i>
+              </td>
               <td @click="getAnswer()">=</td>
             </tr>
           </tbody>
@@ -160,20 +164,38 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import "../scss/_main.scss";
+.circle-one {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(#ffffff, #da00ff);
+  clip-path: circle(20% at 70% 90%);
+}
+.circle-two {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(#e91e63, #ffc107);
+  clip-path: circle(22% at 30% 20%);
+}
 .container {
-  background-color: rgb(216, 32, 42);
-  //   background: url("../assets/snow.jpg") no-repeat;
-  //   background-size: cover;
-  //   background: linear-gradient(to right, rgb(116, 199, 192), rgb(34, 168, 185));
+  background-color: #091921;
   padding: 10vh 25vw;
+  z-index: 1;
+
   .calc-container {
     height: 80vh;
     width: 35vw;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(40px);
+    z-index: 30;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
     border-radius: 5px;
-
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 3fr;
@@ -182,10 +204,10 @@ export default {
       "ba";
     .result-area {
       grid-area: ra;
-      border: 5px solid rgb(216, 32, 42);
+      // border: 5px solid $primary-color;
       display: flex;
       flex-direction: column;
-      color: rgb(41, 19, 19);
+      color: white;
       .history-result {
         height: 50%;
         p {
@@ -216,25 +238,34 @@ export default {
 
         tr {
           td {
-            border: 5px solid rgb(216, 32, 42);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             text-align: center;
             padding: auto;
             font-size: 4rem;
-            color: rgb(216, 32, 42);
+            color: white;
             font-weight: bolder;
             cursor: pointer;
+
+            i.fa-history {
+              font-size: 3rem;
+              cursor: pointer;
+              color: white;
+            }
           }
           td:hover {
-            // background-color: rgb(216, 32, 42);
-            color: white;
-            // transform: scale(1.2);
-            // border-color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+            transition: 0%;
+          }
+          td:active {
+            background: #14ff47;
+            color: #192f00;
           }
         }
       }
     }
   }
 }
+
 @media (max-width: 600px) {
   .container {
     padding: 10vh 5vw;

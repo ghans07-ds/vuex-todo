@@ -64,7 +64,7 @@ i.fa-history {
   left: 35%;
   transform: translate(-50%, -50%);
   cursor: pointer;
-  color: rgb(216, 32, 42);
+  color: white;
 }
 @media (max-width: 600px) {
   .container {
